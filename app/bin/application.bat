@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal EnableExtensions EnableDelayedExpansion
 
 REM ---------------------------------------------------------------------------
 REM  Manages the application service.
@@ -8,22 +8,28 @@ REM  Copyright 2014 Willy du Preez
 REM ---------------------------------------------------------------------------
 
 REM TODO Install as User
+REM TODO JAVA_HOME not set
 
 REM ---------------------------------------------------------------------------
 REM  Initialize
 REM ---------------------------------------------------------------------------
 
 REM - Determine the location of APP_HOME.
-if [%APP_HOME%]==[] (
-   set "BATCH_DIR=%~dp0%"
-   pushd %BATCH_DIR%..
-   set "APP_HOME=%CD%"
-   popd
-   set BATCH_DIR=
-)
+set "BATCH_DIR=%~dp0%"
+cd > nul
+pushd %BATCH_DIR%..
+set "APP_HOME=%CD%"
+popd
+set BATCH_DIR=
 
 REM - Set the prunsrv.exe executable and defaults.
-set "PRUNSRV=%APP_HOME%\system\daemon\windows\prunsrv.exe"
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+   echo Using the X86-64bit version of prunsrv
+   set "PRUNSRV=%APP_HOME%\system\daemon\windows\amd64\prunsrv.exe"
+) else (
+   echo Using the X86-32bit version of prunsrv
+   set "PRUNSRV=%APP_HOME%\system\daemon\windows\prunsrv.exe"
+)
 
 set LOG_PATH=%APP_HOME%\data\log
 set LOG_LEVEL=INFO
@@ -89,13 +95,16 @@ goto :eof
 :cmdInstall
 
 %PRUNSRV% install %APP_NAME%^
+ --Install %PRUNSRV%^
  --DisplayName=%APP_DISPLAYNAME%^
  --Description %APP_DESCRIPTION%^
  --LogLevel=%LOG_LEVEL% --LogPath="%LOG_PATH%" --LogPrefix=service^
  --StdOutput=auto --StdError=auto^
  --Classpath=%APP_HOME%\..\target\commons-daemon-0.0.1-SNAPSHOT.jar^
- --StartMode=Java --StartClass=com.willydupreez.poc.daemon.DaemonLauncher^
- --StopMode=Java --StopClass=com.willydupreez.poc.daemon.DaemonLauncher^
+ --StartMode=jvm --StartClass=com.willydupreez.poc.daemon.DaemonLauncher^
+ --StartParams start^
+ --StopParams stop^
+ --StopMode=jvm --StopClass=com.willydupreez.poc.daemon.DaemonLauncher^
  --StopTimeout=%STOP_TIMEOUT%^
  --Startup=%STARTUP_MODE%^
  --PidFile=app-pid
@@ -104,12 +113,12 @@ goto :eof
 
 :cmdUninstall
 
-%PRUNSRV% stop %APP_NAME%
-if [%errorlevel%]==[0] (
+REM %PRUNSRV% stop %APP_NAME%
+REM if [%errorlevel%]==[0] (
    %PRUNSRV% delete %APP_NAME%
-) else (
-   echo Failed to stop %APP_NAME%
-)
+REM ) else (
+REM    echo Failed to stop %APP_NAME%
+REM )
 
 goto :eof
 
