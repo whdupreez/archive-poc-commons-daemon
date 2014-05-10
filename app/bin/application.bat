@@ -8,7 +8,8 @@ REM  Copyright 2014 Willy du Preez
 REM ---------------------------------------------------------------------------
 
 REM TODO Install as User
-REM TODO JAVA_HOME not set
+REM TODO Check if JAVA_HOME set
+REM TODO Command update
 
 REM ---------------------------------------------------------------------------
 REM  Initialize
@@ -113,12 +114,12 @@ goto :eof
 
 :cmdUninstall
 
-REM %PRUNSRV% stop %APP_NAME%
-REM if [%errorlevel%]==[0] (
-   %PRUNSRV% delete %APP_NAME%
-REM ) else (
-REM    echo Failed to stop %APP_NAME%
-REM )
+%PRUNSRV% stop %APP_NAME%
+if [%errorlevel%]==[0] (
+  %PRUNSRV% delete %APP_NAME%
+) else (
+  echo Failed to stop %APP_NAME%
+)
 
 goto :eof
 
