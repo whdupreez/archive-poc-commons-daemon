@@ -9,7 +9,8 @@ REM ---------------------------------------------------------------------------
 
 REM TODO Install as User
 REM TODO Check if JAVA_HOME set
-REM TODO Command update
+REM TODO Command: update
+REM TODO Command: clean
 
 REM ---------------------------------------------------------------------------
 REM  Initialize
@@ -103,7 +104,7 @@ goto :eof
  --StdOutput=auto --StdError=auto^
  --Classpath=%APP_HOME%\..\target\commons-daemon-0.0.1-SNAPSHOT.jar^
  --StartMode=jvm --StartClass=com.willydupreez.poc.daemon.DaemonLauncher^
- --StartParams start^
+ --StartParams start;"%APP_HOME%"^
  --StopParams stop^
  --StopMode=jvm --StopClass=com.willydupreez.poc.daemon.DaemonLauncher^
  --StopTimeout=%STOP_TIMEOUT%^
