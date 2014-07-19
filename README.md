@@ -1,2 +1,4 @@
 poc-commons-daemon
 ==================
+
+Deprecated.
